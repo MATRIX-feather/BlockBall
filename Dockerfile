@@ -35,7 +35,7 @@ COPY --from=dependencies-jdk17 /root/.m2/repository/org/spigotmc /root/.m2/repos
 COPY . /tmp
 RUN chmod +x gradlew
 RUN dos2unix gradlew
-RUN ./gradlew build pluginJar --no-daemon
+RUN ./gradlew build pluginJar --no-daemon -x test
 
 # 4. Launch a minecraft server with jdk17 and plugin
 FROM amazoncorretto:17
