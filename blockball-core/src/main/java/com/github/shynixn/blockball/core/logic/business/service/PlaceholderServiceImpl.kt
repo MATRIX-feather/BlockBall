@@ -86,11 +86,12 @@ class PlaceholderServiceImpl @Inject constructor(
         } else if (game is MiniGame) {
             val redRemain = game.arena.meta.redTeamMeta.minAmount - game.redTeam.size;
             val blueRemain = game.arena.meta.blueTeamMeta.minAmount - game.blueTeam.size;
+            val playersNoTeam = game.ingamePlayersStorage.entries.size - game.redTeam.size - game.blueTeam.size;
 
             cache = cache.replace(PlaceHolder.TIME.placeHolder, game.gameCountdown.toString())
                 .replace(
                     PlaceHolder.REMAINING_PLAYERS_TO_START.placeHolder,
-                    ( if (redRemain < 0) 0 else redRemain + if (blueRemain < 0) 0 else blueRemain ).toString()
+                    ( (if (redRemain < 0) 0 else redRemain) + (if (blueRemain < 0) 0 else blueRemain) - playersNoTeam ).toString()
                 )
         }
 

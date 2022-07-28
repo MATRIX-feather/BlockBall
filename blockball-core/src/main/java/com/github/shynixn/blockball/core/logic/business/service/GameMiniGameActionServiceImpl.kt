@@ -550,11 +550,22 @@ class GameMiniGameActionServiceImpl @Inject constructor(
      * @return canStart
      */
     private fun canStartLobbyCountdown(game: MiniGame): Boolean {
+        val redTeamPlayers = game.redTeam.size
+        val blueTeamPlayers = game.blueTeam.size
+
+        //红队剩余
+        var redRemain = game.arena.meta.redTeamMeta.minAmount - redTeamPlayers;
+        redRemain = if (redRemain < 0) 0 else redRemain;
+
+        //蓝队剩余
+        var blueRemain = game.arena.meta.blueTeamMeta.minAmount - blueTeamPlayers;
+        blueRemain = if (blueRemain < 0) 0 else blueRemain;
+
+        //没有选队的人：总人数-红队-蓝队
+        val playersNoTeam = game.ingamePlayersStorage.entries.size - redTeamPlayers - blueTeamPlayers; 
+
         //xiamoNote: 检查每个队的人数是否达标，而不是总人数是否达标
-        if (!game.playing
-                && game.redTeam.size >= game.arena.meta.redTeamMeta.minAmount
-                && game.blueTeam.size >= game.arena.meta.blueTeamMeta.minAmount
-                && game.ingamePlayersStorage.isNotEmpty()) {
+        if (!game.playing && redRemain + blueRemain - playersNoTeam <= 0 && game.ingamePlayersStorage.isNotEmpty()) {
             return true
         }
 
