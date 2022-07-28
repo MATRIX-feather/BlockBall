@@ -70,6 +70,8 @@ class GameMiniGameActionServiceImpl @Inject constructor(
     override fun <P> joinGame(game: MiniGame, player: P, team: Team?): Boolean {
         require(player is Any)
 
+        //return值是是否能加入游戏？
+        //如果正在游玩或者已满，return false
         if (game.playing || game.isLobbyFull) {
             val b = ChatBuilderEntity().text(
                 prefix + placeholderService.replacePlaceHolders(
@@ -228,7 +230,8 @@ class GameMiniGameActionServiceImpl @Inject constructor(
             return
         }
 
-        if (game.lobbyCountDownActive) {
+        //检查是否可以执行大厅倒计时
+        if (game.lobbyCountDownActive && canStartLobbyCountdown(game)) {
             if (game.lobbyCountdown > 10) {
                 val amountPlayers = game.arena.meta.blueTeamMeta.maxAmount + game.arena.meta.redTeamMeta.maxAmount
 
@@ -285,17 +288,24 @@ class GameMiniGameActionServiceImpl @Inject constructor(
 
                 switchToNextMatchTime(game)
             }
+            //Xiamo: 大厅倒计时激活时检查人数是否能开始，如果不能，停止计时并重置时间
+        } else if (game.lobbyCountDownActive && !canStartLobbyCountdown(game)) {
+            game.lobbyCountDownActive = false
+            game.lobbyCountdown = game.arena.meta.minigameMeta.lobbyDuration
         }
 
+        //检查倒计时有没有启动，如果没有：
         if (!game.lobbyCountDownActive) {
+            //如果能启动
             if (canStartLobbyCountdown(game)) {
+                //激活计时器
                 game.lobbyCountDownActive = true
                 game.lobbyCountdown = game.arena.meta.minigameMeta.lobbyDuration
-            } else if (!game.playing) {
+            } else if (!game.playing) { //如果不能启动，并且游戏不在游玩，发送actionbar
                 game.ingamePlayersStorage.keys.toTypedArray().forEach { p ->
                     screenMessageService.setActionBar(
                         p,
-                        placeholderService.replacePlaceHolders(
+                        placeholderService.replacePlaceHolders( //Xiamo: 搞清楚这里是怎么替换Placeholder的
                             game.arena.meta.minigameMeta.playersRequiredToStartMessage,
                             game
                         )
@@ -540,9 +550,11 @@ class GameMiniGameActionServiceImpl @Inject constructor(
      * @return canStart
      */
     private fun canStartLobbyCountdown(game: MiniGame): Boolean {
-        val amount = game.arena.meta.redTeamMeta.minAmount + game.arena.meta.blueTeamMeta.minAmount
-
-        if (!game.playing && game.ingamePlayersStorage.size >= amount && game.ingamePlayersStorage.isNotEmpty()) {
+        //xiamoNote: 检查每个队的人数是否达标，而不是总人数是否达标
+        if (!game.playing
+                && game.redTeam.size >= game.arena.meta.redTeamMeta.minAmount
+                && game.blueTeam.size >= game.arena.meta.blueTeamMeta.minAmount
+                && game.ingamePlayersStorage.isNotEmpty()) {
             return true
         }
 
