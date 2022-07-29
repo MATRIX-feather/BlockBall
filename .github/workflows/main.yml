@@ -55,13 +55,13 @@ jobs:
           chmod +x gradlew
           wget "https://jitpack.io/com/github/MilkBowl/VaultAPI/1.7/VaultAPI-1.7.jar"
           mvn install:install-file -Dfile=VaultAPI-1.7.jar -DgroupId=net.milkbowlvault -DartifactId=VaultAPI -Dversion=1.7 -Dpackaging=jar
-          ./gradlew build pluginJar
+          ./gradlew build pluginJar -x test
           echo "RELEASE_VERSION=$(./gradlew -q printVersion)" >> $GITHUB_ENV
 
       - name: Upload assets to GitHub
         uses: AButler/upload-release-assets@v2.0
         with:
-          files: 'build/libs/*;LICENSE'
+          files: 'blockball-bukkit-plugin/build/libs/*;LICENSE'
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
 #      - name: Create Github Release
