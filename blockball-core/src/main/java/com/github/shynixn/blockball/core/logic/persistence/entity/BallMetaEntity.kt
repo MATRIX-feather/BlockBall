@@ -140,4 +140,7 @@ class BallMetaEntity(
     /** Spawnpoint of the ball. */
     @YamlSerialize(orderNumber = 18, value = "spawnpoint", implementation = PositionEntity::class)
     override var spawnpoint: Position? = null
+
+    @YamlSerialize(orderNumber = 19, value = "interaction-cooldown-on-last-player")
+    override var interactionCoolDownOnLastPlayer: Boolean = false
 }

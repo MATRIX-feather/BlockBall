@@ -121,11 +121,13 @@ class BallHitboxEntity(val entityId: Int) {
         packetService.sendEntityDestroyPacket(player, entityId)
     }
 
+    lateinit var lastPlayer : Any
+
     /**
      * Kicks the hitbox for the given player interaction.
      */
     fun kickPlayer(player: Any, baseMultiplier: Double, isPass: Boolean) {
-        if (skipCounter > 0) {
+        if (skipCounter > 0 && !(meta.interactionCoolDownOnLastPlayer && player != lastPlayer)) {
             return
         }
 
@@ -203,6 +205,9 @@ class BallHitboxEntity(val entityId: Int) {
      * Executes the kick.
      */
     private fun executeKickPass(player: Any, prevEyeLoc: Any, baseMultiplier: Double, isPass: Boolean) {
+        //设置上个踢球的玩家
+        lastPlayer = player
+
         var kickVector = proxyService.getLocationDirection(prevEyeLoc)
         val eyeLocation = proxyService.getPlayerEyeLocation<Any, Any>(player)
         val spinV = calculateSpinVelocity(proxyService.getLocationDirection(eyeLocation), kickVector)

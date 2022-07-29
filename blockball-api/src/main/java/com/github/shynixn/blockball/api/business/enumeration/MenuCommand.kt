@@ -116,6 +116,7 @@ enum class MenuCommand(val key: MenuPageKey, private val internalCommand: String
     BALL_TOGGLE_ALWAYSBOUNCE(MenuPageKey.BALL, "tgl-bounce"),
     BALL_TOGGLE_ROTATING(MenuPageKey.BALL, "tgl-rotate"),
     BALL_INTERACT_COOLDOWN(MenuPageKey.BALL, "intrkp"),
+    BALL_INTERACT_COOLDOWN_ON_LAST_PLAYER(MenuPageKey.BALL, "intrkp-olp"),
     BALL_KICKPASS_DELAY(MenuPageKey.BALL, "kpdelay"),
 
     BALLMOD_OPEN(MenuPageKey.BALLMODIFIER, "open"),

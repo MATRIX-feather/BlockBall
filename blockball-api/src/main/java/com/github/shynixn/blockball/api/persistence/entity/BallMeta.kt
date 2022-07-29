@@ -93,4 +93,9 @@ interface BallMeta {
      * Particle effects.
      */
     val soundEffects: MutableMap<BallActionType, Sound>
+
+    /**
+     * 冷却只对上个人生效
+     */
+    var interactionCoolDownOnLastPlayer : Boolean
 }

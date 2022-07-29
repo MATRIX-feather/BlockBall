@@ -76,6 +76,8 @@ class BallSettingsPage : Page(BallSettingsPage.ID, MainSettingsPage.ID) {
             ballMeta.kickPassHitBoxSize = args[2].toDouble()
         } else if (command == MenuCommand.BALL_INTERACT_COOLDOWN && args.size == 3 && args[2].toIntOrNull() != null) {
             ballMeta.interactionCoolDown = args[2].toInt()
+        } else if (command == MenuCommand.BALL_INTERACT_COOLDOWN_ON_LAST_PLAYER && args.size == 3 && args[2].toBoolean() != null) {
+            ballMeta.interactionCoolDownOnLastPlayer = args[2].toBoolean()
         } else if (command == MenuCommand.BALL_KICKPASS_DELAY && args.size == 3 && args[2].toIntOrNull() != null) {
             ballMeta.kickPassDelay = args[2].toInt()
         } else if (command == MenuCommand.BALL_TOGGLE_ALWAYSBOUNCE) {
@@ -145,6 +147,11 @@ class BallSettingsPage : Page(BallSettingsPage.ID, MainSettingsPage.ID) {
             .component(MenuClickableItem.EDIT.text).setColor(MenuClickableItem.EDIT.color)
             .setClickAction(ChatClickAction.SUGGEST_COMMAND, MenuCommand.BALL_INTERACT_COOLDOWN.command)
             .setHoverText("Cooldown in ticks until the next player can interact with the ball again.")
+            .builder().nextLine()
+            .component("- 冷却只对上个玩家有效: " + ballMeta.interactionCoolDownOnLastPlayer).builder()
+            .component(MenuClickableItem.EDIT.text).setColor(MenuClickableItem.EDIT.color)
+            .setClickAction(ChatClickAction.SUGGEST_COMMAND, MenuCommand.BALL_INTERACT_COOLDOWN_ON_LAST_PLAYER.command)
+            .setHoverText("冷却是否只对上个玩家有效")
             .builder().nextLine()
             .component("- Ball Modifiers: ").builder()
             .component(MenuClickableItem.PAGE.text).setColor(MenuClickableItem.PAGE.color)
