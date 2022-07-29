@@ -52,6 +52,12 @@ open class MiniGameEntity(
      * Actual game coutndown.
      */
     override var gameCountdown: Int = 20
+
+    /**
+     * game countdown name
+     */
+    override var currentCountdownName: String = this.arena.meta.minigameMeta.gameWaitingString
+
     /**
      * Index of the current match time.
      */

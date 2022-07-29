@@ -47,17 +47,25 @@ class MinigameLobbyMetaEntity : MinigameLobbyMeta {
         }
     @YamlSerialize(orderNumber = 1, value = "match-times")
     private var internalMatchTimes: ArrayList<MatchTimeMetaEntity>
+
     /** Duration the match will max last. */
     @YamlSerialize(orderNumber = 2, value = "lobby-duration")
     override var lobbyDuration: Int = 20
+
     /** Spawnpoint of the player in the lobby. */
     @YamlSerialize(orderNumber = 3, value = "lobby-spawnpoint", implementation = PositionEntity::class)
     override var lobbySpawnpoint: Position? = null
+
     /** Message being played in the action bar displaying the joined players how many players are remaining to start. */
     @YamlSerialize(orderNumber = 4, value = "remaining-players-message")
     override var playersRequiredToStartMessage: String =
         "&aWaiting for &c" + PlaceHolder.REMAINING_PLAYERS_TO_START.placeHolder + "&a more player(s)..."
 
+    @YamlSerialize(orderNumber = 5, value = "waiting-string")
+    override var gameWaitingString: String = "正在等待"
+
+    @YamlSerialize(orderNumber = 6, value = "starting-string")
+    override var gameStartingString: String = "即将开始"
     init {
         val firstPeriod = MatchTimeMetaEntity()
         firstPeriod.duration = 150

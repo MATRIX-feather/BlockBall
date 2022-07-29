@@ -67,4 +67,7 @@ class MatchTimeMetaEntity : MatchTimeMeta {
      */
     @YamlSerialize(orderNumber = 7, value = "start-message-subtitle")
     override var startMessageSubTitle: String = ""
+
+    @YamlSerialize(orderNumber = 8, value = "name")
+    override var name: String = "???"
 }

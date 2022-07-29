@@ -85,6 +85,11 @@ enum class PlaceHolder(
     TIME("<time>"),
 
     /**
+     * 当前阶段名称
+     */
+    CURRENT_DURATION_NAME("<timename>"),
+
+    /**
      * Replaces this placeholder with the player which was the last one interacting with the ball.
      */
     LASTHITBALL("<player>"),

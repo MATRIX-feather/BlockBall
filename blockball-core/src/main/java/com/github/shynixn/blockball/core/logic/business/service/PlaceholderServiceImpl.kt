@@ -88,11 +88,12 @@ class PlaceholderServiceImpl @Inject constructor(
             val blueRemain = game.arena.meta.blueTeamMeta.minAmount - game.blueTeam.size;
             val playersNoTeam = game.ingamePlayersStorage.entries.size - game.redTeam.size - game.blueTeam.size;
 
-            cache = cache.replace(PlaceHolder.TIME.placeHolder, game.gameCountdown.toString())
+            cache = cache.replace(PlaceHolder.TIME.placeHolder, (if (game.lobbyCountDownActive) game.lobbyCountdown else game.gameCountdown).toString())
                 .replace(
                     PlaceHolder.REMAINING_PLAYERS_TO_START.placeHolder,
                     ( (if (redRemain < 0) 0 else redRemain) + (if (blueRemain < 0) 0 else blueRemain) - playersNoTeam ).toString()
                 )
+                .replace(PlaceHolder.CURRENT_DURATION_NAME.placeHolder, game.currentCountdownName)
         }
 
         if (game.lastInteractedEntity != null && proxyService.isPlayerInstance(game.lastInteractedEntity)) {

@@ -54,6 +54,11 @@ interface MiniGame : Game {
     var gameCountdown: Int
 
     /**
+     * 当前阶段名称
+     */
+    var currentCountdownName : String
+
+    /**
      * Returns if the lobby is full.
      */
     val isLobbyFull: Boolean

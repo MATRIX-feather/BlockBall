@@ -62,4 +62,9 @@ interface MatchTimeMeta {
      * SubTitle of the message getting played when this match time starts.
      */
     var startMessageSubTitle: String
+
+    /**
+     * 此阶段的标题
+     */
+    var name : String
 }

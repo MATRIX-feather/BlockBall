@@ -290,17 +290,14 @@ class GameMiniGameActionServiceImpl @Inject constructor(
             }
             //Xiamo: 大厅倒计时激活时检查人数是否能开始，如果不能，停止计时并重置时间
         } else if (game.lobbyCountDownActive && !canStartLobbyCountdown(game)) {
-            game.lobbyCountDownActive = false
-            game.lobbyCountdown = game.arena.meta.minigameMeta.lobbyDuration
+            deActivateLobbyCountdown(game)
         }
 
         //检查倒计时有没有启动，如果没有：
         if (!game.lobbyCountDownActive) {
             //如果能启动
             if (canStartLobbyCountdown(game)) {
-                //激活计时器
-                game.lobbyCountDownActive = true
-                game.lobbyCountdown = game.arena.meta.minigameMeta.lobbyDuration
+                activateLobbyCountdown(game)
             } else if (!game.playing) { //如果不能启动，并且游戏不在游玩，发送actionbar
                 game.ingamePlayersStorage.keys.toTypedArray().forEach { p ->
                     screenMessageService.setActionBar(
@@ -339,6 +336,18 @@ class GameMiniGameActionServiceImpl @Inject constructor(
         }
     }
 
+    private fun activateLobbyCountdown(game: MiniGame) {
+        game.lobbyCountDownActive = true
+        game.lobbyCountdown = game.arena.meta.minigameMeta.lobbyDuration
+        game.currentCountdownName = game.arena.meta.minigameMeta.gameStartingString
+    }
+
+    private fun deActivateLobbyCountdown(game: MiniGame) {
+        game.lobbyCountDownActive = false
+        game.lobbyCountdown = game.arena.meta.minigameMeta.lobbyDuration
+        game.currentCountdownName = game.arena.meta.minigameMeta.gameWaitingString
+    }
+
     /**
      * Actives the next match time. Closes the match if no match time is available.
      */
@@ -360,6 +369,8 @@ class GameMiniGameActionServiceImpl @Inject constructor(
         }
 
         game.gameCountdown = matchTime.duration
+
+        game.currentCountdownName = matchTime.name
 
         if (matchTime.isSwitchGoalsEnabled) {
             game.mirroredGoals = !game.mirroredGoals

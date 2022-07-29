@@ -41,4 +41,8 @@ interface MinigameLobbyMeta {
 
     /** Message being played in the action bar displaying the joined players how many players are remaining to start. */
     var playersRequiredToStartMessage: String
+
+    var gameWaitingString : String
+
+    var gameStartingString : String
 }
