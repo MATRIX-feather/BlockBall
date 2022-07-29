@@ -98,4 +98,9 @@ interface BallMeta {
      * 冷却只对上个人生效
      */
     var interactionCoolDownOnLastPlayer : Boolean
+
+    /**
+     * interactionCoolDownOnLastPlayer为True时，对其他玩家的互动冷却
+     */
+    var interactionCoolDownOnDifferentPlayer : Int
 }

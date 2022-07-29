@@ -143,4 +143,7 @@ class BallMetaEntity(
 
     @YamlSerialize(orderNumber = 19, value = "interaction-cooldown-on-last-player")
     override var interactionCoolDownOnLastPlayer: Boolean = false
+
+    @YamlSerialize(orderNumber = 20, value = "interaction-cooldown-on-different-player")
+    override var interactionCoolDownOnDifferentPlayer: Int = 5
 }

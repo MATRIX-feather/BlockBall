@@ -33,6 +33,11 @@ class BallHitboxEntity(val entityId: Int) {
     private var skipCounter = 20
 
     /**
+     * 球的互动冷却
+     */
+    private var ballInteractCooldown = 2
+
+    /**
      * Current angular velocity that determines the intensity of Magnus effect.
      */
     private var angularVelocity: Double = 0.0
@@ -121,18 +126,22 @@ class BallHitboxEntity(val entityId: Int) {
         packetService.sendEntityDestroyPacket(player, entityId)
     }
 
-    lateinit var lastPlayer : Any
+    var lastPlayer : Any? = null
 
     /**
      * Kicks the hitbox for the given player interaction.
      */
     fun kickPlayer(player: Any, baseMultiplier: Double, isPass: Boolean) {
-        if (skipCounter > 0 && !(meta.interactionCoolDownOnLastPlayer && player != lastPlayer)) {
+        var canPassCounterCheck = meta.interactionCoolDownOnLastPlayer && player != lastPlayer;
+    
+        //当 互动间隔 > 0 并且 不能绕过间隔检测或能绕过但多人互动冷却大于0 时return
+        if (skipCounter > 0 && (!canPassCounterCheck || canPassCounterCheck && ballInteractCooldown > 0)) {
             return
         }
 
         val prevEyeLoc = proxyService.getPlayerEyeLocation<Any, Any>(player)
         this.skipCounter = meta.interactionCoolDown
+        this.ballInteractCooldown = meta.interactionCoolDownOnDifferentPlayer
 
         if (meta.kickPassDelay == 0) {
             executeKickPass(player, prevEyeLoc, baseMultiplier, isPass)
@@ -150,6 +159,10 @@ class BallHitboxEntity(val entityId: Int) {
     fun <P> tick(players: List<P>) {
         if (skipCounter > 0) {
             skipCounter--
+        }
+
+        if (ballInteractCooldown > 0) {
+            ballInteractCooldown--
         }
 
         if (requestTeleport) {

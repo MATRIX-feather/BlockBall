@@ -76,8 +76,10 @@ class BallSettingsPage : Page(BallSettingsPage.ID, MainSettingsPage.ID) {
             ballMeta.kickPassHitBoxSize = args[2].toDouble()
         } else if (command == MenuCommand.BALL_INTERACT_COOLDOWN && args.size == 3 && args[2].toIntOrNull() != null) {
             ballMeta.interactionCoolDown = args[2].toInt()
-        } else if (command == MenuCommand.BALL_INTERACT_COOLDOWN_ON_LAST_PLAYER && args.size == 3 && args[2].toBoolean() != null) {
+        } else if (command == MenuCommand.BALL_INTERACT_COOLDOWN_ON_LAST_PLAYER && args.size == 3) {
             ballMeta.interactionCoolDownOnLastPlayer = args[2].toBoolean()
+        } else if (command == MenuCommand.BALL_INTERACT_COOLDOWN_ON_DIFFERENT_PLAYER && args.size == 3 && args[2].toIntOrNull() != null) {
+            ballMeta.interactionCoolDownOnDifferentPlayer = args[2].toInt()
         } else if (command == MenuCommand.BALL_KICKPASS_DELAY && args.size == 3 && args[2].toIntOrNull() != null) {
             ballMeta.kickPassDelay = args[2].toInt()
         } else if (command == MenuCommand.BALL_TOGGLE_ALWAYSBOUNCE) {
@@ -152,6 +154,11 @@ class BallSettingsPage : Page(BallSettingsPage.ID, MainSettingsPage.ID) {
             .component(MenuClickableItem.EDIT.text).setColor(MenuClickableItem.EDIT.color)
             .setClickAction(ChatClickAction.SUGGEST_COMMAND, MenuCommand.BALL_INTERACT_COOLDOWN_ON_LAST_PLAYER.command)
             .setHoverText("冷却是否只对上个玩家有效")
+            .builder().nextLine()
+            .component("- 对其他玩家的冷却时间: " + ballMeta.interactionCoolDownOnDifferentPlayer).builder()
+            .component(MenuClickableItem.EDIT.text).setColor(MenuClickableItem.EDIT.color)
+            .setClickAction(ChatClickAction.SUGGEST_COMMAND, MenuCommand.BALL_INTERACT_COOLDOWN_ON_DIFFERENT_PLAYER.command)
+            .setHoverText("当“冷却只对上个玩家有效”启用时，其他玩家的冷却时间")
             .builder().nextLine()
             .component("- Ball Modifiers: ").builder()
             .component(MenuClickableItem.PAGE.text).setColor(MenuClickableItem.PAGE.color)
