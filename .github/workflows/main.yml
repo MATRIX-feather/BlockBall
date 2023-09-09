@@ -91,7 +91,7 @@ jobs:
       - name: Build Documentation
         run: |
           git pull
-          git config --global user.email "shynixn@email.com" && git config --global user.name "Shynixn CI Actions"
+          git config --global user.email "xiamomc_ci@email.com" && git config --global user.name "XiamoMC CI Actions"
           sudo apt-get install python3-pip
           sudo apt-get install python3-setuptools
           sudo pip3 install https://github.com/Shynixn/sphinx_rtd_theme/releases/download/C1.0/sphinx_rtd_theme.zip
@@ -105,4 +105,4 @@ jobs:
           git add docs
           git add -f docs/build
           git commit --message "Automatic CI Documentation."
-          git push --quiet https://Shynixn:${{ secrets.GITHUB_TOKEN }}@github.com/Shynixn/BlockBall.git HEAD:master
+          git push --quiet https://XiaMoZhiShi:${{ secrets.GITHUB_TOKEN }}@github.com/XiaMoZhiShi/BlockBall.git HEAD:master
