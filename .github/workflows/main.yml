@@ -55,24 +55,38 @@ jobs:
           chmod +x gradlew
           wget "https://jitpack.io/com/github/MilkBowl/VaultAPI/1.7/VaultAPI-1.7.jar"
           mvn install:install-file -Dfile=VaultAPI-1.7.jar -DgroupId=net.milkbowlvault -DartifactId=VaultAPI -Dversion=1.7 -Dpackaging=jar
-          ./gradlew build pluginJar -x test
+          ./gradlew build pluginJars -x test
           echo "RELEASE_VERSION=$(./gradlew -q printVersion)" >> $GITHUB_ENV
 
       - name: Upload assets to GitHub
         uses: AButler/upload-release-assets@v2.0
         with:
-          files: 'blockball-bukkit-plugin/build/libs/*;LICENSE'
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          body: "This release was automatically created by Github Actions. Please wait until the author manually sets the patchnotes for this release."
+          tag_name: ${{ env.RELEASE_VERSION }}
+          release_name: Release ${{ env.RELEASE_VERSION }}
+          draft: true
+          prerelease: false
 
-      - name: Upload Bukkit Release to Github
+      - name: Upload Latest Bukkit Release to Github
         if: "contains(github.event.head_commit.message, '--release') && contains(github.ref, 'master')"
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: /home/runner/work/BlockBall/BlockBall/blockball-bukkit-plugin/build/libs/blockball-bukkit-plugin-${{ env.RELEASE_VERSION }}.jar
+          asset_path: /home/runner/work/BlockBall/BlockBall/blockball-bukkit-plugin/build/libs/blockball-bukkit-plugin-${{ env.RELEASE_VERSION }}-latest.jar
           asset_name: BlockBall.jar
+          asset_content_type: application/jar
+
+      - name: Upload Legacy Bukkit Release to Github
+        if: "contains(github.event.head_commit.message, '--release') && contains(github.ref, 'master')"
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: /home/runner/work/BlockBall/BlockBall/blockball-bukkit-plugin/build/libs/blockball-bukkit-plugin-${{ env.RELEASE_VERSION }}-legacy.jar
+          asset_name: BlockBall-Legacy.jar
           asset_content_type: application/jar
 
   Documentation:
