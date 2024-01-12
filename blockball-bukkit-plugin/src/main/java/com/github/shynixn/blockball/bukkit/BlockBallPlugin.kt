@@ -10,11 +10,10 @@ import com.github.shynixn.blockball.api.business.service.*
 import com.github.shynixn.blockball.bukkit.logic.business.listener.*
 import com.github.shynixn.blockball.core.logic.business.commandexecutor.*
 import com.github.shynixn.blockball.core.logic.business.extension.cast
-import com.github.shynixn.blockball.core.logic.business.extension.translateChatColors
 import com.github.shynixn.mcutils.common.Version
 import com.github.shynixn.mcutils.packet.api.PacketInType
 import com.github.shynixn.mcutils.packet.api.PacketService
-import com.github.shynixn.mcutils.packet.impl.PacketServiceImpl
+import com.github.shynixn.mcutils.packet.impl.service.PacketServiceImpl
 import com.google.inject.Guice
 import com.google.inject.Injector
 import org.apache.commons.io.IOUtils
@@ -40,7 +39,7 @@ class BlockBallPlugin : JavaPlugin(), PluginProxy {
     private var injector: Injector? = null
     private var serverVersion: Version? = null
     private val bstatsPluginId = 1317
-    private var packetService : PacketService? = null
+    private var packetService: PacketService? = null
 
     /**
      * Gets the installed version of the plugin.
@@ -98,20 +97,21 @@ class BlockBallPlugin : JavaPlugin(), PluginProxy {
                 Version.VERSION_1_19_R3,
                 Version.VERSION_1_20_R1,
                 Version.VERSION_1_20_R2,
+                Version.VERSION_1_20_R3,
             )
         } else {
             arrayOf(
-                Version.VERSION_1_20_R2,
+                Version.VERSION_1_20_R3,
             )
         }
 
         if (!Version.serverVersion.isCompatible(*versions)) {
-            sendConsoleMessage(ChatColor.RED.toString() + "================================================")
-            sendConsoleMessage(ChatColor.RED.toString() + "BlockBall does not support your server version")
-            sendConsoleMessage(ChatColor.RED.toString() + "Install v" + versions[0].id + " - v" + versions[versions.size - 1].id)
-            sendConsoleMessage(ChatColor.RED.toString() + "Plugin gets now disabled!")
-            sendConsoleMessage(ChatColor.RED.toString() + "================================================")
-
+            logger.log(Level.SEVERE, "================================================")
+            logger.log(Level.SEVERE, "BlockBall does not support your server version")
+            logger.log(Level.SEVERE, "Install v" + versions[0].id + " - v" + versions[versions.size - 1].id)
+            logger.log(Level.SEVERE, "Need support for a particular version? Go to https://www.patreon.com/Shynixn")
+            logger.log(Level.SEVERE, "Plugin gets now disabled!")
+            logger.log(Level.SEVERE, "================================================")
             Bukkit.getPluginManager().disablePlugin(this)
             return
         }
@@ -133,12 +133,10 @@ class BlockBallPlugin : JavaPlugin(), PluginProxy {
 
         startPlugin()
 
-        val updateCheckService = resolve(UpdateCheckService::class.java)
         val dependencyService = resolve(DependencyService::class.java)
         val configurationService = resolve(ConfigurationService::class.java)
         val bungeeCordConnectionService = resolve(BungeeCordConnectionService::class.java)
 
-        updateCheckService.checkForUpdates()
         dependencyService.checkForInstalledDependencies()
 
         val enableMetrics = configurationService.findValue<Boolean>("metrics")
@@ -274,52 +272,10 @@ class BlockBallPlugin : JavaPlugin(), PluginProxy {
     }
 
     /**
-     * Sets the motd of the server.
-     */
-    override fun setMotd(message: String) {
-        val builder = java.lang.StringBuilder("[")
-        builder.append((message.replace("[", "").replace("]", "")))
-        builder.append(ChatColor.RESET.toString())
-        builder.append("]")
-
-        val minecraftServerClazz = try {
-            findClazz("net.minecraft.server.MinecraftServer")
-        } catch (e: Exception) {
-            findClazz("net.minecraft.server.VERSION.MinecraftServer")
-        }
-
-        val craftServerClazz = findClazz("org.bukkit.craftbukkit.VERSION.CraftServer")
-        val setModtMethod = minecraftServerClazz.getDeclaredMethod("setMotd", String::class.java)
-        val getServerConsoleMethod = craftServerClazz.getDeclaredMethod("getServer")
-
-        val console = getServerConsoleMethod.invoke(Bukkit.getServer())
-        setModtMethod.invoke(console, builder.toString().translateChatColors())
-    }
-
-    /**
      * Shutdowns the server.
      */
     override fun shutdownServer() {
         Bukkit.getServer().shutdown()
-    }
-
-    /**
-     * Tries to find a version compatible class.
-     */
-    override fun findClazz(name: String): Class<*> {
-        return Class.forName(
-            name.replace(
-                "VERSION",
-                (BlockBallApi.resolve(PluginProxy::class.java).getServerVersion() as Version).bukkitId
-            )
-        )
-    }
-
-    /**
-     * Sends a console message from this plugin.
-     */
-    override fun sendConsoleMessage(message: String) {
-        Bukkit.getServer().consoleSender.sendMessage(PREFIX_CONSOLE + message)
     }
 
     /**
@@ -358,12 +314,11 @@ class BlockBallPlugin : JavaPlugin(), PluginProxy {
      */
     private fun disableForVersion(version: Version, supportedVersion: Version): Boolean {
         if (getServerVersion() == version) {
-            sendConsoleMessage(ChatColor.RED.toString() + "================================================")
-            sendConsoleMessage(ChatColor.RED.toString() + "BlockBall does not support this subversion")
-            sendConsoleMessage(ChatColor.RED.toString() + "Please upgrade from v" + version.id + " to v" + supportedVersion.id)
-            sendConsoleMessage(ChatColor.RED.toString() + "Plugin gets now disabled!")
-            sendConsoleMessage(ChatColor.RED.toString() + "================================================")
-            Bukkit.getPluginManager().disablePlugin(this)
+            this.logger.log(Level.SEVERE, "================================================")
+            this.logger.log(Level.SEVERE, "BlockBall does not support this subversion")
+            this.logger.log(Level.SEVERE, "Please upgrade from v" + version.id + " to v" + supportedVersion.id)
+            this.logger.log(Level.SEVERE, "Plugin gets now disabled!")
+            this.logger.log(Level.SEVERE, "================================================")
             return true
         }
 

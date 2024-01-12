@@ -8,33 +8,6 @@ import com.github.shynixn.blockball.api.persistence.entity.Position
 import com.github.shynixn.blockball.api.persistence.entity.TeamMeta
 import com.github.shynixn.blockball.core.logic.business.serializer.ItemStackSerializer
 
-/**
- * Entity to hold information about the team.
- * <p>
- * Version 1.2
- * <p>
- * MIT License
- * <p>
- * Copyright (c) 2018 by Shynixn
- * <p>
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * <p>
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- * <p>
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
 class TeamMetaEntity(
     /** DisplayName of the team which gets used in the placeholder <red> or <blue>. */
     @YamlSerialize(orderNumber = 1, value = "displayname")
@@ -106,9 +79,36 @@ class TeamMetaEntity(
     /** Inventory this team is getting when playing. */
     @YamlSerialize(orderNumber = 9, value = "inventory", customserializer = ItemStackSerializer::class)
     override var inventoryContents: Array<Any?> = arrayOfNulls(36)
+
+    @YamlSerialize(orderNumber = 12, value = "score-message-fadein")
+    override var scoreMessageFadeIn: Int = 20
+    @YamlSerialize(orderNumber = 12, value = "score-message-stay")
+    override var scoreMessageStay: Int = 60
+    @YamlSerialize(orderNumber = 12, value = "score-message-fadeout")
+    override var scoreMessageFadeOut: Int = 20
+
+    @YamlSerialize(orderNumber = 14, value = "win-message-fadein")
+    override var winMessageFadeIn: Int = 20
+    @YamlSerialize(orderNumber = 14, value = "win-message-stay")
+    override var winMessageStay: Int = 60
+    @YamlSerialize(orderNumber = 14, value = "win-message-fadeout")
+    override var winMessageFadeOut: Int = 20
+
+    @YamlSerialize(orderNumber = 16, value = "draw-message-fadein")
+    override var drawMessageFadeIn: Int = 20
+    @YamlSerialize(orderNumber = 16, value = "draw-message-stay")
+    override var drawMessageStay: Int = 60
+    @YamlSerialize(orderNumber = 16, value = "draw-message-fadeout")
+    override var drawMessageFadeOut: Int = 20
+
     /** Spawnpoint of the team inside of the arena. */
     @YamlSerialize(orderNumber = 6, value = "spawnpoint", implementation = PositionEntity::class)
     override var spawnpoint: Position? = null
+
+    /** Optional lobby spawnpoint */
+    @YamlSerialize(orderNumber = 6, value = "lobby-spawnpoint", implementation = PositionEntity::class)
+    override var lobbySpawnpoint: Position? = null
+
     /** List of signs for this team */
     @YamlSerialize(orderNumber = 11, value = "signs")
     private var internalSigns: MutableList<PositionEntity> = ArrayList()

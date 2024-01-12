@@ -75,23 +75,16 @@ class GameMiniGameActionServiceImpl @Inject constructor(
         if (game.playing || game.isLobbyFull) {
             val b = ChatBuilderEntity().text(
                 prefix + placeholderService.replacePlaceHolders(
-                    game.arena.meta.spectatorMeta.spectateStartMessage[0],
-                    game
+                    game.arena.meta.spectatorMeta.spectateStartMessage[0], game
                 )
-            )
-                .nextLine()
-                .component(
-                    prefix + placeholderService.replacePlaceHolders(
-                        game.arena.meta.spectatorMeta.spectateStartMessage[1],
-                        game
-                    )
+            ).nextLine().component(
+                prefix + placeholderService.replacePlaceHolders(
+                    game.arena.meta.spectatorMeta.spectateStartMessage[1], game
                 )
-                .setClickAction(
-                    ChatClickAction.RUN_COMMAND,
-                    "/" + configurationService.findValue<String>("global-spectate.command") + " " + game.arena.name
-                )
-                .setHoverText(" ")
-                .builder()
+            ).setClickAction(
+                ChatClickAction.RUN_COMMAND,
+                "/" + configurationService.findValue<String>("global-spectate.command") + " " + game.arena.name
+            ).setHoverText(" ").builder()
 
             proxyService.sendMessage(player, b)
 
@@ -201,7 +194,10 @@ class GameMiniGameActionServiceImpl @Inject constructor(
             screenMessageService.setTitle(
                 p,
                 placeholderService.replacePlaceHolders(game.arena.meta.redTeamMeta.drawMessageTitle, game),
-                placeholderService.replacePlaceHolders(game.arena.meta.redTeamMeta.drawMessageSubTitle, game)
+                placeholderService.replacePlaceHolders(game.arena.meta.redTeamMeta.drawMessageSubTitle, game),
+                game.arena.meta.redTeamMeta.drawMessageFadeIn,
+                game.arena.meta.redTeamMeta.drawMessageStay,
+                game.arena.meta.redTeamMeta.drawMessageFadeOut,
             )
         }
 
@@ -209,14 +205,20 @@ class GameMiniGameActionServiceImpl @Inject constructor(
             screenMessageService.setTitle(
                 p,
                 placeholderService.replacePlaceHolders(game.arena.meta.redTeamMeta.drawMessageTitle, game),
-                placeholderService.replacePlaceHolders(game.arena.meta.redTeamMeta.drawMessageSubTitle, game)
+                placeholderService.replacePlaceHolders(game.arena.meta.redTeamMeta.drawMessageSubTitle, game),
+                game.arena.meta.redTeamMeta.drawMessageFadeIn,
+                game.arena.meta.redTeamMeta.drawMessageStay,
+                game.arena.meta.redTeamMeta.drawMessageFadeOut,
             )
         }
         game.blueTeam.forEach { p ->
             screenMessageService.setTitle(
                 p,
                 placeholderService.replacePlaceHolders(game.arena.meta.blueTeamMeta.drawMessageTitle, game),
-                placeholderService.replacePlaceHolders(game.arena.meta.blueTeamMeta.drawMessageSubTitle, game)
+                placeholderService.replacePlaceHolders(game.arena.meta.blueTeamMeta.drawMessageSubTitle, game),
+                game.arena.meta.blueTeamMeta.drawMessageFadeIn,
+                game.arena.meta.blueTeamMeta.drawMessageStay,
+                game.arena.meta.blueTeamMeta.drawMessageFadeOut,
             )
         }
     }
@@ -301,10 +303,8 @@ class GameMiniGameActionServiceImpl @Inject constructor(
             } else if (!game.playing) { //如果不能启动，并且游戏不在游玩，发送actionbar
                 game.ingamePlayersStorage.keys.toTypedArray().forEach { p ->
                     screenMessageService.setActionBar(
-                        p,
-                        placeholderService.replacePlaceHolders( //Xiamo: 搞清楚这里是怎么替换Placeholder的
-                            game.arena.meta.minigameMeta.playersRequiredToStartMessage,
-                            game
+                        p, placeholderService.replacePlaceHolders(
+                            game.arena.meta.minigameMeta.playersRequiredToStartMessage, game
                         )
                     )
                 }
@@ -402,7 +402,10 @@ class GameMiniGameActionServiceImpl @Inject constructor(
                     screenMessageService.setTitle(
                         p,
                         placeholderService.replacePlaceHolders(matchTime.startMessageTitle, game),
-                        placeholderService.replacePlaceHolders(matchTime.startMessageSubTitle, game)
+                        placeholderService.replacePlaceHolders(matchTime.startMessageSubTitle, game),
+                        matchTime.startMessageFadeIn,
+                        matchTime.startMessageStay,
+                        matchTime.startMessageFadeOut
                     )
                 }
             }
@@ -449,10 +452,14 @@ class GameMiniGameActionServiceImpl @Inject constructor(
 
         if (!game.arena.meta.customizingMeta.keepInventoryEnabled) {
             proxyService.setInventoryContents(
-                player,
-                teamMeta.inventoryContents.clone(),
-                teamMeta.armorContents.clone()
+                player, teamMeta.inventoryContents.clone(), teamMeta.armorContents.clone()
             )
+        }
+
+        if (team == Team.RED && game.arena.meta.redTeamMeta.lobbySpawnpoint != null) {
+            proxyService.teleport(player, game.arena.meta.redTeamMeta.lobbySpawnpoint)
+        } else if (team == Team.BLUE && game.arena.meta.blueTeamMeta.lobbySpawnpoint != null) {
+            proxyService.teleport(player, game.arena.meta.blueTeamMeta.lobbySpawnpoint)
         }
 
         val players = if (team == Team.RED) {
@@ -463,10 +470,7 @@ class GameMiniGameActionServiceImpl @Inject constructor(
 
         proxyService.sendMessage(
             player, prefix + placeholderService.replacePlaceHolders(
-                teamMeta.joinMessage,
-                game,
-                teamMeta,
-                players.size
+                teamMeta.joinMessage, game, teamMeta, players.size
             )
         )
     }
@@ -475,16 +479,17 @@ class GameMiniGameActionServiceImpl @Inject constructor(
      * Returns if the given [player] is allowed to spectate the match.
      */
     private fun isAllowedToSpectateWithPermissions(game: MiniGame, player: Any): Boolean {
-        val hasSpectatingPermission = proxyService.hasPermission(player, Permission.SPECTATE.permission + ".all")
-                || proxyService.hasPermission(player, Permission.SPECTATE.permission + "." + game.arena.name)
+        val hasSpectatingPermission =
+            proxyService.hasPermission(player, Permission.SPECTATE.permission + ".all") || proxyService.hasPermission(
+                player, Permission.SPECTATE.permission + "." + game.arena.name
+            )
 
         if (hasSpectatingPermission) {
             return true
         }
 
         proxyService.sendMessage(
-            player,
-            prefix + configurationService.findValue<String>("messages.no-permission-spectate-game")
+            player, prefix + configurationService.findValue<String>("messages.no-permission-spectate-game")
         )
 
         return false

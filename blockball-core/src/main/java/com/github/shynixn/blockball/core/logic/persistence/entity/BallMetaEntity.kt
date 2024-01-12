@@ -46,7 +46,19 @@ class BallMetaEntity(
      * Optional nbt applied to the item of the ball. e.g. Skull.
      */
     @YamlSerialize(orderNumber = 2, value = "item-nbt")
-    override var itemNbt: String? = null
+    override var itemNbt: String? = ""
+
+    /**
+     * Item Type being used.
+     */
+    @YamlSerialize(orderNumber = 2, value = "item-type")
+    override var itemType: String = "PLAYER_HEAD,397"
+
+    /**
+     * Item Damage.
+     */
+    @YamlSerialize(orderNumber = 2, value = "item-damage")
+    override var itemDamage: Int = 3
 
     /**
      * If set to true, the slime is visible instead of the ball.

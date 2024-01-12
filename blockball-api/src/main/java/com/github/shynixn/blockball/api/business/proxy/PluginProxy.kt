@@ -39,16 +39,6 @@ interface PluginProxy {
     fun getServerVersion(): Any
 
     /**
-     * Sends a console message from this plugin.
-     */
-    fun sendConsoleMessage(message: String)
-
-    /**
-     * Sets the motd of the server.
-     */
-    fun setMotd(message: String)
-
-    /**
      * Shutdowns the server.
      */
     fun shutdownServer()
@@ -57,11 +47,6 @@ interface PluginProxy {
      * Is the plugin enabled?
      */
     fun isEnabled() : Boolean
-
-    /**
-     * Tries to find a version compatible class.
-     */
-    fun findClazz(name : String) : Class<*>
 
     /**
      * Gets a business logic from the BlockBall plugin.

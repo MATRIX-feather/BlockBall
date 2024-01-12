@@ -70,4 +70,13 @@ class MatchTimeMetaEntity : MatchTimeMeta {
 
     @YamlSerialize(orderNumber = 8, value = "name")
     override var name: String = "???"
+
+    @YamlSerialize(orderNumber = 8, value = "start-message-fadein")
+    override var startMessageFadeIn: Int = 20
+
+    @YamlSerialize(orderNumber = 9, value = "start-message-stay")
+    override var startMessageStay: Int = 60
+
+    @YamlSerialize(orderNumber = 10, value = "start-message-fadeout")
+    override var startMessageFadeOut: Int = 20
 }
